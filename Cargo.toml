@@ -1,0 +1,23 @@
+[package]
+name = "konigsberg"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+libloading = "0.8.0"
+object = "0.31.1"
+once_cell = { version = "1.18.0", features = ["parking_lot"] }
+region = "3.0.0"
+steamworks-sys = "0.10.0"
+
+[build-dependencies]
+reqwest = { version = "0.11", default-features = false, features = ["blocking", "rustls-tls"], optional = true }
+syn = { version = "2", features = ["extra-traits", "printing"], optional = true }
+proc-macro2 = { version = "1.0.63", optional = true }
+quote = { version = "1.0.29", optional = true }
+
+[features]
+rebuild-reexports = [ "reqwest", "syn", "proc-macro2", "quote" ]

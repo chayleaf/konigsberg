@@ -27,8 +27,8 @@ macro_rules! reexport {
             let sym = CELL.get_or_init(|| {
                 sym($link)
                     .or_else(|_| sym(&$link[1..]))
-                    .or_else(|_| sym(&$link[2..]))
                     .or_else(|_| sym(stringify!($name)))
+                    .or_else(|_| sym(Box::leak(Box::new("\x01".to_owned() + $link)).as_str()))
                     .expect(&format!("failed to load symbol: {}", $link))
             });
             sym($( $arg ),*)

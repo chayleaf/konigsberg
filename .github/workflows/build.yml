@@ -1,9 +1,11 @@
 name: Rust
+permissions: write-all
 on:
   push:
     branches: [ "master" ]
 env:
   CARGO_TERM_COLOR: always
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build-linux:
     runs-on: ubuntu-latest

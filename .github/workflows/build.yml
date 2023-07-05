@@ -23,6 +23,11 @@ jobs:
       uses: chayleaf/rs-actions@konigsberg
       with:
         publish-release: true
+        target: i686-pc-windows-msvc
+    - name: rs-action
+      uses: chayleaf/rs-actions@konigsberg
+      with:
+        publish-release: true
   build-darwin:
     runs-on: macos-latest
     steps:

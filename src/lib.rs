@@ -38,12 +38,12 @@ unsafe fn parse_ver(ver: *const c_char) -> Option<Interface> {
 }
 
 #[allow(clippy::missing_safety_doc)]
-#[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+#[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
 unsafe extern "C" fn b_is_dlc_installed(_this: *mut c_void, _app_id: AppId_t) -> bool {
     true
 }
 #[allow(clippy::missing_safety_doc)]
-#[cfg(all(target_os = "windows", target_arch = "x86"))]
+#[cfg(all(target_os = "windows", target_pointer_width = "32"))]
 unsafe extern "fastcall" fn b_is_dlc_installed(
     _this: *mut c_void,
     _edx: usize,
@@ -51,7 +51,7 @@ unsafe extern "fastcall" fn b_is_dlc_installed(
 ) -> bool {
     true
 }
-#[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+#[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
 #[allow(clippy::missing_safety_doc, improper_ctypes_definitions)]
 unsafe extern "C" fn user_has_license_for_app(
     _this: *mut c_void,
@@ -60,7 +60,7 @@ unsafe extern "C" fn user_has_license_for_app(
 ) -> EUserHasLicenseForAppResult {
     EUserHasLicenseForAppResult::k_EUserHasLicenseResultHasLicense
 }
-#[cfg(all(target_os = "windows", target_arch = "x86"))]
+#[cfg(all(target_os = "windows", target_pointer_width = "32"))]
 #[allow(clippy::missing_safety_doc, improper_ctypes_definitions)]
 unsafe extern "fastcall" fn user_has_license_for_app(
     _this: *mut c_void,
@@ -73,21 +73,23 @@ unsafe extern "fastcall" fn user_has_license_for_app(
 
 #[derive(Copy, Clone)]
 struct OrigSteamClientFns {
-    #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+    #[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
     generic: Option<
         unsafe extern "C" fn(*mut c_void, HSteamUser, HSteamPipe, *const c_char) -> *mut c_void,
     >,
-    #[cfg(all(target_os = "windows", target_arch = "x86"))]
-    generic: unsafe extern "fastcall" fn(
-        *mut c_void,
-        usize,
-        HSteamUser,
-        HSteamPipe,
-        *const c_char,
-    ) -> *mut c_void,
-    #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+    #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
+    generic: Option<
+        unsafe extern "fastcall" fn(
+            *mut c_void,
+            usize,
+            HSteamUser,
+            HSteamPipe,
+            *const c_char,
+        ) -> *mut c_void,
+    >,
+    #[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
     apps: unsafe extern "C" fn(*mut c_void, HSteamUser, HSteamPipe, *const c_char) -> *mut c_void,
-    #[cfg(all(target_os = "windows", target_arch = "x86"))]
+    #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
     apps: unsafe extern "fastcall" fn(
         *mut c_void,
         usize,
@@ -95,9 +97,9 @@ struct OrigSteamClientFns {
         HSteamPipe,
         *const c_char,
     ) -> *mut c_void,
-    #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+    #[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
     user: unsafe extern "C" fn(*mut c_void, HSteamUser, HSteamPipe, *const c_char) -> *mut c_void,
-    #[cfg(all(target_os = "windows", target_arch = "x86"))]
+    #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
     user: unsafe extern "fastcall" fn(
         *mut c_void,
         usize,
@@ -138,12 +140,21 @@ unsafe fn steam_client_common(
                         })
                 })
             })
-            .map(|func| func(this, steam_user, steam_pipe, ver))
+            .map(|func| {
+                func(
+                    this,
+                    #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
+                    0,
+                    steam_user,
+                    steam_pipe,
+                    ver,
+                )
+            })
             .unwrap_or(std::ptr::null_mut()),
     )
 }
 
-#[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+#[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "C" fn get_i_steam_generic_interface(
     this: *mut c_void,
@@ -153,7 +164,7 @@ unsafe extern "C" fn get_i_steam_generic_interface(
 ) -> *mut c_void {
     steam_client_common(this, steam_user, steam_pipe, ver, SteamClientFn::Generic)
 }
-#[cfg(all(target_os = "windows", target_arch = "x86"))]
+#[cfg(all(target_os = "windows", target_pointer_width = "32"))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "fastcall" fn get_i_steam_generic_interface(
     this: *mut c_void,
@@ -164,7 +175,7 @@ unsafe extern "fastcall" fn get_i_steam_generic_interface(
 ) -> *mut c_void {
     steam_client_common(this, steam_user, steam_pipe, ver, SteamClientFn::Generic)
 }
-#[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+#[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "C" fn get_i_steam_user(
     this: *mut c_void,
@@ -174,7 +185,7 @@ unsafe extern "C" fn get_i_steam_user(
 ) -> *mut c_void {
     steam_client_common(this, steam_user, steam_pipe, ver, SteamClientFn::User)
 }
-#[cfg(all(target_os = "windows", target_arch = "x86"))]
+#[cfg(all(target_os = "windows", target_pointer_width = "32"))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "fastcall" fn get_i_steam_user(
     this: *mut c_void,
@@ -185,7 +196,7 @@ unsafe extern "fastcall" fn get_i_steam_user(
 ) -> *mut c_void {
     steam_client_common(this, steam_user, steam_pipe, ver, SteamClientFn::User)
 }
-#[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+#[cfg(any(not(target_os = "windows"), not(target_pointer_width = "32")))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "C" fn get_i_steam_apps(
     this: *mut c_void,
@@ -195,7 +206,7 @@ unsafe extern "C" fn get_i_steam_apps(
 ) -> *mut c_void {
     steam_client_common(this, steam_user, steam_pipe, ver, SteamClientFn::Apps)
 }
-#[cfg(all(target_os = "windows", target_arch = "x86"))]
+#[cfg(all(target_os = "windows", target_pointer_width = "32"))]
 #[allow(clippy::missing_safety_doc)]
 unsafe extern "fastcall" fn get_i_steam_apps(
     this: *mut c_void,
@@ -250,12 +261,15 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                         // this is issubscribedapp, same sig as isdlcinstalled
                         (
                             6,
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 b_is_dlc_installed
                                     as unsafe extern "C" fn(*mut c_void, AppId_t) -> bool,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 b_is_dlc_installed
                                     as unsafe extern "fastcall" fn(
@@ -270,12 +284,15 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                     if n >= 3 {
                         patches.push((
                             7,
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 b_is_dlc_installed
                                     as unsafe extern "C" fn(*mut c_void, AppId_t) -> bool,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 b_is_dlc_installed
                                     as unsafe extern "fastcall" fn(
@@ -299,7 +316,10 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                                 13..=14 => 16,
                                 15.. => 17,
                             },
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 user_has_license_for_app
                                     as unsafe extern "C" fn(
@@ -309,7 +329,7 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                                     )
                                         -> EUserHasLicenseForAppResult,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 user_has_license_for_app
                                     as unsafe extern "fastcall" fn(
@@ -346,7 +366,10 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                     let mut patches = vec![
                         (
                             offset_apps,
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 get_i_steam_apps
                                     as unsafe extern "C" fn(
@@ -357,7 +380,7 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                                     )
                                         -> *mut c_void,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 get_i_steam_apps
                                     as unsafe extern "fastcall" fn(
@@ -372,7 +395,10 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                         ),
                         (
                             offset_user,
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 get_i_steam_user
                                     as unsafe extern "C" fn(
@@ -383,7 +409,7 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                                     )
                                         -> *mut c_void,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 get_i_steam_user
                                     as unsafe extern "fastcall" fn(
@@ -400,7 +426,10 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                     if let Some(offset_generic) = offset_generic {
                         patches.push((
                             offset_generic,
-                            #[cfg(any(not(target_os = "windows"), not(target_arch = "x86")))]
+                            #[cfg(any(
+                                not(target_os = "windows"),
+                                not(target_pointer_width = "32")
+                            ))]
                             std::mem::transmute(Some(
                                 get_i_steam_generic_interface
                                     as unsafe extern "C" fn(
@@ -411,7 +440,7 @@ unsafe fn patch_ptr(ver: Option<Interface>, ret: *mut c_void) -> *mut c_void {
                                     )
                                         -> *mut c_void,
                             )),
-                            #[cfg(all(target_os = "windows", target_arch = "x86"))]
+                            #[cfg(all(target_os = "windows", target_pointer_width = "32"))]
                             std::mem::transmute(Some(
                                 get_i_steam_generic_interface
                                     as unsafe extern "fastcall" fn(

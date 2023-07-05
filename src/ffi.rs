@@ -54,14 +54,48 @@ unsafe fn lib() -> &'static libloading::Library {
             #[cfg(target_os = "macos")]
             {
                 libloading::Library::new("./libsteam_api.orig.dylib")
+                    .or_else(|_| libloading::Library::new("./libsteam_api_orig.dylib"))
+                    .or_else(|_| libloading::Library::new("libsteam_api.orig.dylib"))
+                    .or_else(|_| libloading::Library::new("libsteam_api_orig.dylib"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig.dylib"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig.dylib"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig"))
             }
-            #[cfg(target_os = "windows")]
+            #[cfg(all(target_os = "windows", not(target_pointer_width = "64")))]
             {
                 libloading::Library::new("./steam_api.orig.dll")
+                    .or_else(|_| libloading::Library::new("./steam_api_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig"))
+            }
+            #[cfg(all(target_os = "windows", target_pointer_width = "64"))]
+            {
+                libloading::Library::new("./steam_api64.orig.dll")
+                    .or_else(|_| libloading::Library::new("./steam_api64_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api64.orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api64_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api64.orig"))
+                    .or_else(|_| libloading::Library::new("steam_api64_orig"))
+                    .or_else(|_| libloading::Library::new("./steam_api.orig.dll"))
+                    .or_else(|_| libloading::Library::new("./steam_api_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig.dll"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig"))
             }
             #[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
             {
                 libloading::Library::new("./libsteam_api.orig.so")
+                    .or_else(|_| libloading::Library::new("./libsteam_api_orig.so"))
+                    .or_else(|_| libloading::Library::new("libsteam_api.orig.so"))
+                    .or_else(|_| libloading::Library::new("libsteam_api_orig.so"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig.so"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig.so"))
+                    .or_else(|_| libloading::Library::new("steam_api.orig"))
+                    .or_else(|_| libloading::Library::new("steam_api_orig"))
             }
         }
         .expect("failed to load steam api lib")

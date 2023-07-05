@@ -1,9 +1,7 @@
 name: Rust
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches: [ "tmp" ]
 env:
   CARGO_TERM_COLOR: always
 jobs:

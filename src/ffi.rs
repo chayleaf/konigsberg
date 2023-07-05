@@ -79,26 +79,3 @@ include!(concat!(env!("OUT_DIR"), "/reexports.rs"));
 
 #[cfg(not(feature = "rebuild-reexports"))]
 include!("reexports.rs");
-
-/*reexport!(fn SteamAPI_Init() -> bool);
-reexport!(fn SteamAPI_Shutdown());
-reexport!(fn SteamAPI_IsSteamRunning() -> bool);
-reexport!(fn SteamAPI_GetHSteamUser() -> HSteamUser);
-reexport!(fn SteamAPI_RunCallbacks());
-reexport!(fn SteamAPI_RegisterCallback(pCallback: *mut CCallbackBase, iCallback: std::os::raw::c_int));
-reexport!(fn SteamAPI_UnregisterCallback(pCallback: *mut CCallbackBase));
-reexport!(fn SteamAPI_RegisterCallResult(pCallback: *mut CCallbackBase, hAPICall: SteamAPICall_t));
-reexport!(fn SteamAPI_UnregisterCallResult(pCallback: *mut CCallbackBase, hAPICall: SteamAPICall_t));
-reexport!(fn SteamGameServer_Shutdown());
-reexport!(fn SteamGameServer_GetHSteamUser() -> HSteamUser);
-reexport!(fn SteamGameServer_RunCallbacks());
-reexport!(fn SteamInternal_ContextInit(pContextInitData: *mut c_void) -> *mut c_void);
-reexport!(fn SteamInternal_FindOrCreateGameServerInterface(hSteamUser: HSteamUser, pszVersion: *const c_char) -> *mut c_void);
-reexport!(fn SteamInternal_GameServer_Init(
-    unIP: uint32,
-    usLegacySteamPort: uint16,
-    usGamePort: uint16,
-    usQueryPort: uint16,
-    eServerMode: EServerMode,
-    pchVersionString: *const c_char
-) -> bool);*/

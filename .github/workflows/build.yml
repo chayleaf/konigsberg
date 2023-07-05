@@ -1,0 +1,33 @@
+name: Rust
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: rs-action
+      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      with:
+        publish-release: true
+  build-win32:
+    runs-on: windows-latest
+    steps:
+    - name: rs-action
+      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      with:
+        publish-release: true
+  build-darwin:
+    runs-on: macos-latest
+    steps:
+    - name: rs-action
+      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      with:
+        target: x86_64-apple-darwin
+        publish-release: true
+
+

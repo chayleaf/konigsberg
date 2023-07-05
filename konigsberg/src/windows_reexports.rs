@@ -1,3 +1,0 @@
-reexport!("\u{1}_ZN23SteamNetworkingIdentity15SetGenericBytesEPKvy", fn SteamNetworkingIdentity_SetGenericBytes(this : * mut SteamNetworkingIdentity, data : * const :: std :: os :: raw :: c_void, cbLen : size_t) -> bool);
-reexport!("\u{1}_ZNK23SteamNetworkingIdentity8ToStringEPcy", fn SteamNetworkingIdentity_ToString(this : * const SteamNetworkingIdentity, buf : * mut :: std :: os :: raw :: c_char, cbBuf : size_t));
-reexport!("\u{1}_ZN21ISteamNetworkingUtils20SetConfigValueStructERK28SteamNetworkingConfigValue_t27ESteamNetworkingConfigScopex", fn ISteamNetworkingUtils_SetConfigValueStruct(this : * mut ISteamNetworkingUtils, opt : * const SteamNetworkingConfigValue_t, eScopeType : ESteamNetworkingConfigScope, scopeObj : isize) -> bool);

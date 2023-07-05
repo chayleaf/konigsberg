@@ -1,31 +1,17 @@
 name: Rust
+permissions: write-all
 on:
   push:
     branches: [ "tmp" ]
 env:
   CARGO_TERM_COLOR: always
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      uses: chayleaf/rs-actions@33db31bf3f400589df4689c8c821ff45d1c31127
       with:
         publish-release: true
-  build-win32:
-    runs-on: windows-latest
-    steps:
-    - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
-      with:
-        publish-release: true
-  build-darwin:
-    runs-on: macos-latest
-    steps:
-    - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
-      with:
-        target: x86_64-apple-darwin
-        publish-release: true
-
-

@@ -426,7 +426,6 @@ reexport!(fn SteamAPI_ISteamUserStats_GetGlobalStatHistoryInt64(self_ : * mut IS
 reexport!(fn SteamAPI_ISteamUserStats_GetGlobalStatHistoryDouble(self_ : * mut ISteamUserStats, pchStatName : * const :: std :: os :: raw :: c_char, pData : * mut f64, cubData : uint32) -> int32);
 reexport!(fn SteamAPI_ISteamUserStats_GetAchievementProgressLimitsInt32(self_ : * mut ISteamUserStats, pchName : * const :: std :: os :: raw :: c_char, pnMinProgress : * mut int32, pnMaxProgress : * mut int32) -> bool);
 reexport!(fn SteamAPI_ISteamUserStats_GetAchievementProgressLimitsFloat(self_ : * mut ISteamUserStats, pchName : * const :: std :: os :: raw :: c_char, pfMinProgress : * mut f32, pfMaxProgress : * mut f32) -> bool);
-reexport!(fn SteamAPI_SteamApps_v008() -> * mut ISteamApps);
 reexport!(fn SteamAPI_ISteamApps_BIsSubscribed(self_ : * mut ISteamApps) -> bool);
 reexport!(fn SteamAPI_ISteamApps_BIsLowViolence(self_ : * mut ISteamApps) -> bool);
 reexport!(fn SteamAPI_ISteamApps_BIsCybercafe(self_ : * mut ISteamApps) -> bool);

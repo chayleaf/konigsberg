@@ -73,6 +73,9 @@ unsafe fn sym<T>(name: &str) -> Result<libloading::Symbol<T>, libloading::Error>
 }
 
 import!(fn SteamInternal_FindOrCreateUserInterface(hSteamUser: HSteamUser, pszVersion: *const c_char) -> *mut c_void);
+import!(fn SteamAPI_SteamApps_v008() -> *mut ISteamApps);
+// future proof?
+import!(fn SteamAPI_SteamApps_v009() -> *mut ISteamApps);
 
 #[cfg(feature = "rebuild-reexports")]
 include!(concat!(env!("OUT_DIR"), "/reexports.rs"));

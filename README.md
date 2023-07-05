@@ -11,4 +11,3 @@ To use:
 2. Move `libkonigsberg.so`/`konigsberg.dll` to where
    `libsteam_api.so`/`steam_api.dll` used to be
 
-Warning: mold linker can't build this at the moment of writing this

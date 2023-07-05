@@ -4,7 +4,7 @@ use std::{
     ffi::{c_char, c_void, CStr},
     sync::Mutex,
 };
-use steamworks_sys::{AppId_t, HSteamUser};
+use steamworks_sys::{AppId_t, HSteamUser, ISteamApps};
 
 mod ffi;
 
@@ -27,13 +27,15 @@ struct Offsets {
     // offset_b_get_dlc_data_by_index: Option<usize>,
 }
 
-unsafe fn offsets(ver: *const c_char) -> Option<Offsets> {
-    let ver = CStr::from_ptr(ver).to_str().ok()?;
-    if !ver.starts_with("STEAMAPPS_INTERFACE_VERSION")
-        || ver.ends_with("001")
-        || ver.ends_with("002")
-    {
-        return None;
+unsafe fn offsets(ver: Option<*const c_char>) -> Option<Offsets> {
+    if let Some(ver) = ver {
+        let ver = CStr::from_ptr(ver).to_str().ok()?;
+        if !ver.starts_with("STEAMAPPS_INTERFACE_VERSION")
+            || ver.ends_with("001")
+            || ver.ends_with("002")
+        {
+            return None;
+        }
     }
     Some(Offsets {
         offset_b_is_dlc_installed: 7,
@@ -61,13 +63,13 @@ unsafe extern "C" fn b_is_dlc_installed(_app_id: AppId_t) -> bool {
     true
 }
 
-unsafe fn patch_ptr(ver: *const c_char, ret: *mut c_void) -> *mut c_void {
+unsafe fn patch_ptr(ver: Option<*const c_char>, ret: *mut c_void) -> *mut c_void {
     static PATCH_DONE: OnceCell<Mutex<HashSet<usize>>> = OnceCell::new();
     if !ret.is_null() {
         if let Some(ofs) = offsets(ver) {
-            let done = PATCH_DONE.get_or_init(Default::default);
+            let patch_done = PATCH_DONE.get_or_init(Default::default);
             let vtable = *(ret as *mut *mut usize);
-            let mut lock = done.lock().unwrap();
+            let mut lock = patch_done.lock().unwrap();
             if lock.contains(&(vtable as usize)) {
                 return ret;
             }
@@ -97,5 +99,16 @@ pub unsafe extern "C" fn SteamInternal_FindOrCreateUserInterface(
     user: HSteamUser,
     ver: *const c_char,
 ) -> *mut c_void {
-    patch_ptr(ver, ffi::SteamInternal_FindOrCreateUserInterface(user, ver))
+    patch_ptr(Some(ver), ffi::SteamInternal_FindOrCreateUserInterface(user, ver))
+}
+
+#[allow(non_snake_case, clippy::missing_safety_doc)]
+#[no_mangle]
+pub unsafe extern "C" fn SteamAPI_SteamApps_v008() -> *mut ISteamApps {
+    patch_ptr(None, ffi::SteamAPI_SteamApps_v008() as *mut c_void) as *mut ISteamApps
+}
+#[allow(non_snake_case, clippy::missing_safety_doc)]
+#[no_mangle]
+pub unsafe extern "C" fn SteamAPI_SteamApps_v009() -> *mut ISteamApps {
+    patch_ptr(None, ffi::SteamAPI_SteamApps_v009() as *mut c_void) as *mut ISteamApps
 }

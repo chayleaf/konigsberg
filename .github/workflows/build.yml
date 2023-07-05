@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      uses: chayleaf/rs-actions@konigsberg
       with:
         publish-release: true
   build-win32:
@@ -20,7 +20,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      uses: chayleaf/rs-actions@konigsberg
       with:
         publish-release: true
   build-darwin:
@@ -28,7 +28,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: rs-action
-      uses: MidKnightXI/rs-actions@d9fc5f4e55331ae271d6d82d3fdfc895ec5d2e74
+      uses: chayleaf/rs-actions@konigsberg
       with:
         target: x86_64-apple-darwin
         publish-release: true
